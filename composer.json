@@ -1,0 +1,23 @@
+{
+    "name": "kasan/logger-package",
+    "description": "Package for store logs with RabbitMQ",
+    "keywords": ["log","logging", "rabbit"],
+    "type": "package",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Kasan",
+            "email": "aleksandr.kashirin@a-bank.com.ua"
+        }
+    ],
+    "require": {
+        "php-amqplib/php-amqplib": "^2.7",
+        "php": ">=7.0.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "kashirin\\rabbit_mq\\": ""
+        }
+    },
+    "version": "1.0.0"
+}
