@@ -26,7 +26,9 @@ class RabbitLogFormatter extends NormalizerFormatter
     public function format(array $record)
     {
         $record = parent::format($record);
+
         $message = new LogEntity($record, $this->type);
+        dd($message);
         $message = $message->getLog();
 
         return $this->toJson($message) . "\n";

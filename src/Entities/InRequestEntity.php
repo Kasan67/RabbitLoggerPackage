@@ -52,15 +52,21 @@ class InRequestEntity implements BodyInterface
     public $response_headers;
 
 
-    public function __construct($data)
+    public function __construct($request, $response)
     {
-        $this->duration = $data['message'];
-        $this->request_uri = $data['code'];
-        $this->request_headers = $data['trace'];
-        $this->request_body = $data['trace'];
-        $this->request_type = $data['trace'];
-        $this->response_code = $data['trace'];
-        $this->response_body = $data['trace'];
-        $this->response_headers = $data['trace'];
+        $this->duration = $this->getDuration($request->server->get('REQUEST_TIME'), $request->server->get('REQUEST_TIME_FLOAT'));
+        $this->request_uri = $request->fullUrl();
+        $this->request_headers = $request->headers->all();
+        $this->request_body = $request->all();
+        $this->request_type = $request->getMethod();
+
+//        $this->response_code = $response->getCode();
+//        $this->response_body = $response->body->all();
+//        $this->response_headers = $response->headers->all();
+    }
+
+    private function getDuration($start, $end)
+    {
+        return $end - $start;
     }
 }

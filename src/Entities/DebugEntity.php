@@ -18,6 +18,7 @@ class DebugEntity implements BodyInterface
 
     public function __construct($data)
     {
+        dd($data);
         $this->debug_msg = $data['message'];
     }
 }

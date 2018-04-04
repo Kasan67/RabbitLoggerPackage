@@ -8,6 +8,8 @@
 namespace kashirin\rabbit_mq;
 
 
+use Mockery\Exception;
+
 class ErrorEntity implements BodyInterface
 {
     /**
@@ -25,11 +27,11 @@ class ErrorEntity implements BodyInterface
      */
     public $stacktrace;
 
-    public function __construct($data)
+    public function __construct(Exception $data)
     {
-        $this->err_text = $data['message'];
-        $this->err_code = $data['code'];
-        $this->stacktrace = $data['trace'];
+        $this->err_text = $data->getMessage();
+        $this->err_code = $data->getCode();
+        $this->stacktrace = $data->getTraceAsString();
     }
 
 

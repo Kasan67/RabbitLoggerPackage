@@ -22,12 +22,10 @@ abstract class AbstractFactoryBody
     /** - debug - отладочная информация */
     const DEBUG = 'debug';
 
-    abstract protected function createBody(string $type, $data): BodyInterface;
+    abstract protected function createBody(string $type, $data): array;
 
-    public function create(string $type, $data): BodyInterface
+    public function create(string $type, $data): array
     {
-        $obj = $this->createBody($type, $data);
-
-        return $obj;
+        return $this->createBody($type, $data);
     }
 }

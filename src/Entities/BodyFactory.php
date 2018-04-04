@@ -8,24 +8,23 @@
 namespace kashirin\rabbit_mq;
 
 
-
 class BodyFactory extends AbstractFactoryBody
 {
 
-    protected function createBody(string $type, $data): BodyInterface
+    protected function createBody(string $type, $request, $response = null): array
     {
         switch ($type) {
             case parent::REQUEST:
-                $body = new InRequestEntity($data);
+                $body = new InRequestEntity($request, $response);
                 break;
             case parent::ERROR:
-                $body = new ErrorEntity($data);
+                $body = new ErrorEntity($request);
                 break;
             case parent::INFO:
-                $body = new InfoEntity($data);
+                $body = new InfoEntity($request);
                 break;
             case parent::DEBUG:
-                $body = new DebugEntity($data);
+                $body = new DebugEntity($request);
                 break;
             default:
                 throw new \InvalidArgumentException("$type is not a valid log-type");
@@ -37,7 +36,7 @@ class BodyFactory extends AbstractFactoryBody
 
     public function getBody(BodyInterface $body)
     {
-        return get_class_vars($body);
+        return get_object_vars($body);
     }
 
 

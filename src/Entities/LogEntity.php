@@ -48,47 +48,16 @@ class LogEntity
      */
     public $data_obj;
 
-    public function __construct($data, $type)
+    public function __construct($message, $type, $response)
     {
-        $this->extref = $data['Ref'];
-
-        // устанавливаем свой тип ошибки
-        $this->setLevel($type);
+        $this->extref = $message['cookie'];
 
         // в зависимости от типа создаем нужное тело запроса
         $factory = new BodyFactory();
-        $this->data_type = $factory->create($type, $data);
+        $this->data_type = $factory->create($type, $message, $response);
 
         // информация о хостах
-        $this->data_obj = new ObjectInfoEntity($data);
-    }
-
-
-    /**
-     * Устанавливаем наши типы ошибок согласно документации
-     * @param $level
-     */
-    private function setLevel($level)
-    {
-        switch ($level)
-        {
-            case Logger::ALERT:
-            case Logger::CRITICAL:
-            case Logger::ERROR:
-            case Logger::WARNING:
-                $this->type_msg = self::ERROR;
-                break;
-            case Logger::INFO:
-            case Logger::NOTICE:
-                $this->type_msg = self::INFO;
-                break;
-            case Logger::API:
-                $this->type_msg = self::REQUEST;
-                break;
-            default:
-                $this->type_msg = self::DEBUG;
-                break;
-        }
+        $this->data_obj = new ObjectInfoEntity($message);
     }
 
     public function getLog()
