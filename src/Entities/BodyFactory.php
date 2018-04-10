@@ -8,10 +8,20 @@
 namespace kashirin\rabbit_mq;
 
 
+/**
+ * Class BodyFactory
+ * @package kashirin\rabbit_mq
+ */
 class BodyFactory extends AbstractFactoryBody
 {
 
-    protected function createBody(string $type, $request, $response = null): array
+    /**
+     * @param string $type
+     * @param $request
+     * @param null $response
+     * @return BodyInterface
+     */
+    protected function createBody(string $type, $request, $response = null): BodyInterface
     {
         switch ($type) {
             case parent::REQUEST:
@@ -30,14 +40,7 @@ class BodyFactory extends AbstractFactoryBody
                 throw new \InvalidArgumentException("$type is not a valid log-type");
         }
 
-        return $this->getBody($body);
+        return $body;
     }
-
-
-    public function getBody(BodyInterface $body)
-    {
-        return get_object_vars($body);
-    }
-
 
 }

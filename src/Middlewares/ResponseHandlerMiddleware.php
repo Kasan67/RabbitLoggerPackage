@@ -6,39 +6,51 @@
  */
 namespace kashirin\rabbit_mq\Middlewares;
 
+use Illuminate\Foundation\Application;
 use kashirin\rabbit_mq\Log;
 use \Closure;
-use Mockery\Exception;
 
+/**
+ * Class ResponseHandlerMiddleware
+ * @package kashirin\rabbit_mq\Middlewares
+ */
 class ResponseHandlerMiddleware
 {
     /**
-     * Handle an incoming request.
+     * @var Application
+     */
+    private $app;
+
+    /**
+     * @var Log
+     */
+    private $logger;
+
+    /**
+     * Create a new middleware instance.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
+     * @param  \Illuminate\Foundation\Application  $app
+     * @return void
+     */
+    public function __construct(Application $app)
+    {
+        $this->app = $app;
+        $this->logger = new Log($this->app['config']['services.rabbit_log']);
+    }
+
+    /**
+     * @param $request
+     * @param Closure $next
      * @return mixed
+     * @throws \AMQPChannelException
+     * @throws \AMQPConnectionException
+     * @throws \AMQPExchangeException
      */
     public function handle($request, Closure $next)
     {
-
         $response = $next($request);
 
-        $config['name'] = "video";
-        $config['host'] = 'portal-mq.diint.ab.loc'; //http://
-        $config['port'] = 5672;
-        $config['user'] = 'video_user';
-        $config['password'] = 'video_mq';
-        $config['exchange'] = 'log.direct.ex';
-
-        try {
-            $mess = new Log($config);
-            $mess->log($response, $request);
-
-        } catch (Exception $exception) {
-
-        }
-
+        $this->logger->log($response, $request);
 
         return $response;
     }

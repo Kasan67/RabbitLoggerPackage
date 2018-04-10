@@ -8,6 +8,10 @@
 namespace kashirin\rabbit_mq;
 
 
+/**
+ * Class ObjectInfoEntity
+ * @package kashirin\rabbit_mq
+ */
 class ObjectInfoEntity implements BodyInterface
 {
 
@@ -36,13 +40,19 @@ class ObjectInfoEntity implements BodyInterface
      */
     public $app_path;
 
-    public function __construct($data)
+    /**
+     * ObjectInfoEntity constructor.
+     * @param $facility
+     */
+    public function __construct($facility)
     {
-        $this->dt = $data['message'];
-        $this->local_host = $data['code'];
-        $this->remote_host = $data['trace'];
-        $this->obj_id = $data['trace'];
-        $this->app_path = $data['trace'];
+        $dateObj = \DateTime::createFromFormat('U.u', $_SERVER['REQUEST_TIME_FLOAT']);
+
+        $this->dt = $dateObj->format('Y-m-d H:i:s:u');
+        $this->local_host = $_SERVER['HTTP_HOST'];
+        $this->remote_host = $_SERVER['REMOTE_ADDR'];
+        $this->obj_id = $facility;
+        $this->app_path = $_SERVER['DOCUMENT_ROOT'];
     }
 
 }

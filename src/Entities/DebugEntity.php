@@ -8,6 +8,10 @@
 namespace kashirin\rabbit_mq;
 
 
+/**
+ * Class DebugEntity
+ * @package kashirin\rabbit_mq
+ */
 class DebugEntity implements BodyInterface
 {
 
@@ -16,6 +20,10 @@ class DebugEntity implements BodyInterface
      */
     public $debug_msg;
 
+    /**
+     * DebugEntity constructor.
+     * @param $data
+     */
     public function __construct($data)
     {
         dd($data);

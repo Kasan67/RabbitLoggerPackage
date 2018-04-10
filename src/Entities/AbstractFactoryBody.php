@@ -8,6 +8,10 @@
 namespace kashirin\rabbit_mq;
 
 
+/**
+ * Class AbstractFactoryBody
+ * @package kashirin\rabbit_mq
+ */
 abstract class AbstractFactoryBody
 {
     /**  - error - сообщение об ошибке */
@@ -22,10 +26,23 @@ abstract class AbstractFactoryBody
     /** - debug - отладочная информация */
     const DEBUG = 'debug';
 
-    abstract protected function createBody(string $type, $data): array;
+    /**
+     * @param string $type
+     * @param $data
+     * @param null $response
+     * @return BodyInterface
+     */
+    abstract protected function createBody(string $type, $data, $response = null): BodyInterface;
 
-    public function create(string $type, $data): array
+    /**
+     * @param string $type
+     * @param $data
+     * @param null $response
+     * @return BodyInterface
+     */
+    public function create(string $type, $data, $response = null): BodyInterface
     {
-        return $this->createBody($type, $data);
+        return $this->createBody($type, $data, $response);
     }
+
 }

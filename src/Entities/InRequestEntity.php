@@ -8,6 +8,12 @@
 namespace kashirin\rabbit_mq;
 
 
+use Illuminate\Http\Request;
+
+/**
+ * Class InRequestEntity
+ * @package kashirin\rabbit_mq
+ */
 class InRequestEntity implements BodyInterface
 {
 
@@ -52,21 +58,29 @@ class InRequestEntity implements BodyInterface
     public $response_headers;
 
 
+    /**
+     * InRequestEntity constructor.
+     * @param $request
+     * @param $response
+     */
     public function __construct($request, $response)
     {
-        $this->duration = $this->getDuration($request->server->get('REQUEST_TIME'), $request->server->get('REQUEST_TIME_FLOAT'));
+        $this->duration = $this->getDuration($request->server->get('REQUEST_TIME_FLOAT'));
         $this->request_uri = $request->fullUrl();
         $this->request_headers = $request->headers->all();
         $this->request_body = $request->all();
         $this->request_type = $request->getMethod();
-
-//        $this->response_code = $response->getCode();
-//        $this->response_body = $response->body->all();
-//        $this->response_headers = $response->headers->all();
+        $this->response_code = $response->status();
+        $this->response_body = $response->getOriginalContent();
+        $this->response_headers = $response->headers->all();
     }
 
-    private function getDuration($start, $end)
+    /**
+     * @param $time
+     * @return float
+     */
+    private function getDuration($time)
     {
-        return $end - $start;
+        return round((microtime(true) - $time), 3);
     }
 }

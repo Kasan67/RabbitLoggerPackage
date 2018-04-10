@@ -8,6 +8,10 @@ namespace kashirin\rabbit_mq\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
+/**
+ * Class RabbitLogger
+ * @package kashirin\rabbit_mq\Facades
+ */
 class RabbitLogger extends Facade
 {
 

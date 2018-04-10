@@ -1,19 +1,30 @@
 <?php
-namespace kashirin\rabbit_mq;
 /**
  * User: kasan
  * Date: 3/29/18
  * Time: 4:34 PM
  */
 
-use PhpAmqpLib\Wire\IO\StreamIO;
-use PhpAmqpLib\Connection\AbstractConnection;
+namespace kashirin\rabbit_mq;
 
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\ResponseInterface;
+use PhpAmqpLib\Connection\AMQPSocketConnection;
+use PhpAmqpLib\Message\AMQPMessage;
 
-class RabbitLogger extends AbstractConnection
+/**
+ * Class RabbitLogger
+ * @package kashirin\rabbit_mq
+ */
+class RabbitLogger
 {
+    /**
+     * @var array
+     */
+    private $config;
+
+    /**
+     * @var \PhpAmqpLib\Channel\AMQPChannel
+     */
+    private $channel;
 
     /**
      * Init RabbitMQ
@@ -21,115 +32,61 @@ class RabbitLogger extends AbstractConnection
      * @param array $config - config data
      * @throws \Exception - Required fields doesn't exist
      */
-    public function __construct($config = [])
+    public function __construct($config)
     {
         $this->_checkRequiredFields($config);
 
-        $config = $this->_setDefaultValue($config);
-
-        $io = new StreamIO(
+        $connection = new AMQPSocketConnection(
             $config['host'],
             $config['port'],
-            $config['connection_timeout'],
-            $config['read_write_timeout'],
-            $config['context']
-        );
-        $this->sock = $io->get_socket();
-
-        parent::__construct(
-            $config['username'],
+            $config['user'],
             $config['password'],
-            $config['vhost'],
-            $config['insist'],
-            $config['login_method'],
-            $config['login_response'],
-            $config['locale'],
-            $io
+            $config['exchange']
         );
 
-        // Рекурсивно подключаемся в RabbitMQ
-        $this->recursive_connection($config['reconnection_attempts']);
+        $this->channel = $connection->channel();
+        $this->channel->queue_declare($this->config['facility'], false, true, false, false, false);
+        $this->channel->exchange_declare($this->config['exchange'], 'direct', false, true, false);
+        $this->channel->queue_bind($this->config['facility'], $this->config['exchange']);
 
-        // save the params for the use of __clone, this will overwrite the parent
-        $this->construct_params = func_get_args();
     }
-
-    public function handle(
-        ServerRequestInterface $request,
-        ServerFrameInterface $frame
-    ): ResponseInterface
-    {
-        if ($this->isBadRequest($request)) {
-            return $frame->factory()
-                ->createResponse("Bad Request", 400);
-        }
-
-        return $frame->next($request);
-    }
-
 
     /**
-     * Рекурсивно подключаемся в RabbitMQ
-     *
-     * @throws \Exception - Не удалось подключиться
+     * @param $data
+     * @throws \AMQPChannelException
+     * @throws \AMQPConnectionException
+     * @throws \AMQPExchangeException
      */
-    public function recursive_connection($reconnection_attempts)
+    public function send($data)
     {
-        try {
-            $this->connect();
-
-        } catch (\Exception $e) {
-
-            for ($i=0; $i<=$reconnection_attempts; $i++) {
-                try {
-                    $this->reconnect();
-                    break;
-
-                } catch (\Exception $e) {
-                    if ($i>=$reconnection_attempts) {
-                        throw new \Exception($e->getMessage());
-                    }
-                }
-            }
+        if ($this->channel instanceof \AMQPExchange) {
+            $this->channel->publish(
+                $data,
+                '',
+                0,
+                ['delivery_mode' => 2, 'content_type' => 'application/json']
+            );
+        } else {
+            $this->channel->basic_publish(
+                $this->createAmqpMessage($data),
+                $this->config['exchange']
+            );
         }
     }
 
     /**
-     * Set default values
-     *
-     * @param $config - config data
-     * @return mixed - updated config data
+     * @param  string      $data
+     * @return AMQPMessage
      */
-    protected function _setDefaultValue($config)
+    private function createAmqpMessage($data)
     {
-        if (!isset($config['connection_timeout']))
-            $config['connection_timeout'] = 3;
-
-        if (!isset($config['read_write_timeout']))
-            $config['read_write_timeout'] = 3;
-
-        if (!isset($config['reconnection_attempts']))
-            $config['reconnection_attempts'] = 5;
-
-        if (!isset($config['context']))
-            $config['context'] = null;
-
-        if (!isset($config['vhost']))
-            $config['vhost'] = '/';
-
-        if (!isset($config['insist']))
-            $config['insist'] = false;
-
-        if (!isset($config['login_method']))
-            $config['login_method'] = 'AMQPLAIN';
-
-        if (!isset($config['login_response']))
-            $config['login_response'] = null;
-
-        if (!isset($config['locale']))
-            $config['locale'] = 'en_US';
-
-        return $config;
+        return new AMQPMessage(
+            (string) $data,
+            array(
+                'delivery_mode' => 2,
+                'content_type' => 'application/json',
+            )
+        );
     }
 
     /**
@@ -146,11 +103,18 @@ class RabbitLogger extends AbstractConnection
         if (!isset($config['port']))
             throw new \Exception("Variable port doesn't exist");
 
-        if (!isset($config['username']))
+        if (!isset($config['user']))
             throw new \Exception("Variable username doesn't exist");
 
         if (!isset($config['password']))
             throw new \Exception("Variable password doesn't exist");
-    }
 
+        if (!isset($config['facility']))
+            throw new \Exception("Variable facility doesn't exist");
+
+        if (!isset($config['exchange']))
+            $config['exchange'] = '';
+
+        $this->config = $config;
+    }
 }

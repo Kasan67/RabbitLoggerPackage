@@ -8,6 +8,10 @@
 namespace kashirin\rabbit_mq;
 
 
+/**
+ * Class InfoEntity
+ * @package kashirin\rabbit_mq
+ */
 class InfoEntity implements BodyInterface
 {
     /**
@@ -25,9 +29,13 @@ class InfoEntity implements BodyInterface
      */
     public $stacktrace;
 
+    /**
+     * InfoEntity constructor.
+     * @param $data
+     */
     public function __construct($data)
     {
-        $this->msg_text = $data['message'];
-        $this->msg_code = $data['code'];
+        $this->msg_text = $data;
+        $this->msg_code = '';
     }
 }

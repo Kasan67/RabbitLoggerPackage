@@ -8,6 +8,10 @@
 namespace kashirin\rabbit_mq;
 
 
+/**
+ * Interface BodyInterface
+ * @package kashirin\rabbit_mq
+ */
 interface BodyInterface
 {
 

@@ -7,22 +7,15 @@
 
 namespace kashirin\rabbit_mq;
 
-use Monolog\Logger;
 
+use Ramsey\Uuid\Uuid;
+
+/**
+ * Class LogEntity
+ * @package kashirin\rabbit_mq
+ */
 class LogEntity
 {
-    /**  - error - сообщение об ошибке */
-    const ERROR = 'error';
-
-    /** - info - информационное сообщение */
-    const INFO = 'info';
-
-    /** - inrequest - данные поступившего запроса и отправленного ответа */
-    const REQUEST = 'inrequest';
-
-    /** - debug - отладочная информация */
-    const DEBUG = 'debug';
-
     /**
      * @var - уникальный идентификатор операции;
      */
@@ -48,21 +41,35 @@ class LogEntity
      */
     public $data_obj;
 
-    public function __construct($message, $type, $response)
+    /**
+     * LogEntity constructor.
+     * @param $message
+     * @param $type
+     * @param $response
+     * @param $facility
+     */
+    public function __construct($message, $type, $response, $facility)
     {
-        $this->extref = $message['cookie'];
+        $this->extref = Uuid::uuid4()->toString();
+        $this->type_msg = $type;
 
-        // в зависимости от типа создаем нужное тело запроса
+        // в зависимости от типа создаем нужное тело запроса при помощи фабрики
         $factory = new BodyFactory();
-        $this->data_type = $factory->create($type, $message, $response);
+        $this->data_type = $this->getLog($factory->create($type, $message, $response));
 
         // информация о хостах
-        $this->data_obj = new ObjectInfoEntity($message);
+        $this->data_obj = $this->getLog(new ObjectInfoEntity($facility));
+
+        //TODO get SID from Chameleon
     }
 
-    public function getLog()
+    /**
+     * @param null $obj
+     * @return array
+     */
+    public function getLog($obj = null): array
     {
-        return get_class_vars($this);
+        return ($obj) ? get_object_vars($obj) : get_object_vars($this);
     }
 
 }

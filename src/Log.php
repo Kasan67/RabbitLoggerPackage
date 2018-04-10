@@ -7,13 +7,14 @@
 
 namespace kashirin\rabbit_mq;
 
-use Mockery\Exception;
-use Monolog\Logger;
-use Monolog\Handler\AmqpHandler;
-use PhpAmqpLib\Connection\AMQPStreamConnection;
+
 use Psr\Log\LoggerInterface;
 
-class Log implements LoggerInterface //extends Logger
+/**
+ * Class Log
+ * @package kashirin\rabbit_mq
+ */
+class Log implements LoggerInterface
 {
     /**  - error - сообщение об ошибке */
     const ERROR = 'error';
@@ -27,66 +28,51 @@ class Log implements LoggerInterface //extends Logger
     /** - debug - отладочная информация */
     const DEBUG = 'debug';
 
-    private $config;
-    private $channel;
+    /**
+     * @var string
+     */
+    private $facility;
 
+    /**
+     * @var RabbitLogger
+     */
+    private $rabbit;
+
+    /**
+     * Log constructor.
+     * @param $config
+     */
     public function __construct($config)
     {
-        $this->_checkRequiredFields($config);
-
-        try {
-            $connection = new AMQPStreamConnection($this->config['host'], $this->config['port'], $this->config['user'], $this->config['password'], $this->config['name']);
-            $this->channel = $connection->channel();
-            $rmqhandler = new AmqpHandler($this->channel, $this->config['name']);
-            $rmqhandler->setFormatter(new RabbitLogFormatter($this->config['name']));
-
-//        $channel->queue_declare($this->config['exchange'], false, false, false, false);
-//
-//        $msg = new AMQPMessage('Hello World!');
-//        $channel->basic_publish($msg, '', 'hello');
-//
-//        echo " [x] Sent 'Hello World!'\n";
-
-
-        } catch (Exception $e){
-            throw new Exception('Error connect to Rabbit', '330');
-        }
-
+        $this->rabbit = new RabbitLogger($config);
+        $this->facility = $config['facility'];
     }
 
-    public function prepareLog($message, $type, $response = null)
+    /**
+     * @param $message
+     * @param $type
+     * @param null $response
+     *
+     * @throws \AMQPChannelException
+     * @throws \AMQPConnectionException
+     * @throws \AMQPExchangeException
+     */
+    private function prepareLog($message, $type, $response = null)
     {
-        $message = new LogEntity($message, $type, $response);
-        dd($message);
-        $message = $message->getLog();
+        $message = new LogEntity($message, $type, $response, $this->facility);
+        $data = json_encode($message->getLog(),  JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+        $this->rabbit->send($data);
     }
-
-//    public function addWarning($message, array $context = array())
-//    {
-//        $rmqhandler = new AmqpHandler($this->channel, $this->config['name'], Logger::WARNING);
-//        $rmqhandler->setFormatter(new RabbitLogFormatter($this->config['name']));
-//        $ff = new RabbitLogFormatter($this->config['name'], Logger::WARNING);
-//        $ss = $ff->format($context);
-//        dd($ss);
-////        $this->pushHandler($rmqhandler);
-//
-//        return ;//parent::addWarning($message, $context);
-//    }
-
-//    public function addAlert($message, array $context = array())
-//    {
-//        $rmqhandler = new AmqpHandler($this->channel, $this->config['name'], Logger::ALERT);
-//        $rmqhandler->setFormatter(new RabbitLogFormatter($this->config['name']));
-////        $this->pushHandler($rmqhandler);
-//
-//        return parent::addAlert($message, $context);
-//    }
 
     /**
      * System is unusable.
      *
      * @param string $message
      * @param array $context
+     *
+     * @throws \AMQPChannelException
+     * @throws \AMQPConnectionException
+     * @throws \AMQPExchangeException
      *
      * @return void
      */
@@ -104,6 +90,10 @@ class Log implements LoggerInterface //extends Logger
      * @param string $message
      * @param array $context
      *
+     * @throws \AMQPChannelException
+     * @throws \AMQPConnectionException
+     * @throws \AMQPExchangeException
+     *
      * @return void
      */
     public function alert($message, array $context = array())
@@ -119,6 +109,10 @@ class Log implements LoggerInterface //extends Logger
      * @param string $message
      * @param array $context
      *
+     * @throws \AMQPChannelException
+     * @throws \AMQPConnectionException
+     * @throws \AMQPExchangeException
+     *
      * @return void
      */
     public function critical($message, array $context = array())
@@ -132,6 +126,10 @@ class Log implements LoggerInterface //extends Logger
      *
      * @param string $message
      * @param array $context
+     *
+     * @throws \AMQPChannelException
+     * @throws \AMQPConnectionException
+     * @throws \AMQPExchangeException
      *
      * @return void
      */
@@ -149,6 +147,10 @@ class Log implements LoggerInterface //extends Logger
      * @param string $message
      * @param array $context
      *
+     * @throws \AMQPChannelException
+     * @throws \AMQPConnectionException
+     * @throws \AMQPExchangeException
+     *
      * @return void
      */
     public function warning($message, array $context = array())
@@ -161,6 +163,10 @@ class Log implements LoggerInterface //extends Logger
      *
      * @param string $message
      * @param array $context
+     *
+     * @throws \AMQPChannelException
+     * @throws \AMQPConnectionException
+     * @throws \AMQPExchangeException
      *
      * @return void
      */
@@ -177,6 +183,10 @@ class Log implements LoggerInterface //extends Logger
      * @param string $message
      * @param array $context
      *
+     * @throws \AMQPChannelException
+     * @throws \AMQPConnectionException
+     * @throws \AMQPExchangeException
+     *
      * @return void
      */
     public function info($message, array $context = array())
@@ -189,6 +199,10 @@ class Log implements LoggerInterface //extends Logger
      *
      * @param string $message
      * @param array $context
+     *
+     * @throws \AMQPChannelException
+     * @throws \AMQPConnectionException
+     * @throws \AMQPExchangeException
      *
      * @return void
      */
@@ -204,6 +218,10 @@ class Log implements LoggerInterface //extends Logger
      * @param string $message
      * @param array $context
      *
+     * @throws \AMQPChannelException
+     * @throws \AMQPConnectionException
+     * @throws \AMQPExchangeException
+     *
      * @return void
      */
     public function log($level, $message, array $context = array())
@@ -211,30 +229,6 @@ class Log implements LoggerInterface //extends Logger
         $this->prepareLog($message, self::REQUEST, $level);
     }
 
-    /**
-     * Check Required fields
-     *
-     * @param $config - config data
-     * @throws \Exception -
-     */
-    protected function _checkRequiredFields($config)
-    {
-        if (!isset($config['host']))
-            throw new \Exception("Variable host doesn't exist");
 
-        if (!isset($config['port']))
-            throw new \Exception("Variable port doesn't exist");
-
-        if (!isset($config['user']))
-            throw new \Exception("Variable username doesn't exist");
-
-        if (!isset($config['password']))
-            throw new \Exception("Variable password doesn't exist");
-
-        if (!isset($config['name']))
-            $config['name'] = '';
-
-        $this->config = $config;
-    }
 
 }

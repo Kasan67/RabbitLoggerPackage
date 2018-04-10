@@ -9,6 +9,10 @@ namespace kashirin\rabbit_mq;
 
 use Illuminate\Support\ServiceProvider;
 
+/**
+ * Class RabbitLoggerServiceProvider
+ * @package kashirin\rabbit_mq
+ */
 class RabbitLoggerServiceProvider extends ServiceProvider
 {
     /**
@@ -26,7 +30,7 @@ class RabbitLoggerServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->singleton(Log::class, function ($app) {
-            return new LoggerManager($app);
+            return new Log($app['config']['services.rabbit_log']);
         });
     }
 
