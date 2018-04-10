@@ -26,7 +26,8 @@ class DebugEntity implements BodyInterface
      */
     public function __construct($data)
     {
-        dd($data);
-        $this->debug_msg = $data['message'];
+        if (!$this->debug_msg = json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT)) {
+            $this->debug_msg = json_last_error();
+        }
     }
 }

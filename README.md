@@ -25,12 +25,6 @@ After installing the library, register the `kashirin\rabbit_mq\RabbitLoggerServi
 ],
 ```
 
-Also, add the `RabbitLogger` facade to the `aliases` array in your `app` configuration file:
-
-```php
-'RabbitLogger' => kashirin\rabbit_mq\Facades\RabbitLogger::class,
-```
-
 You will also need to add credentials in your `config/services.php` configuration file. For example:
 
 ```php
@@ -39,27 +33,79 @@ You will also need to add credentials in your `config/services.php` configuratio
     'port' => 'your-rabbit-port',
     'user' => 'your-rabbit-user-name',
     'password' => 'your-rabbit-user-password',
-    'exchange' => 'your-rabbit-exchange'
+    'exchange' => 'your-rabbit-exchange',
     'facility' => 'name of project'
 ],
 ```
 
-### Basic Usage
 
+To handle all application errors, you need to add to the file `app/Exceptions/Handler.php` these lines in the method :
 
 ```php
-<?php
 
-namespace App\Http\Controllers\Auth;
-
-
-class LoginController
-{
-   
-    public function redirectToProvider()
+use kashirin\rabbit_mq\Log;
+    
+public function render($request, Exception $exception)
     {
-        return new Log();
+        //init and configure logger
+        $config = config('services.rabbit_log');
+        $logger =  new Log($config);
+        $logger->error($exception);
+        
+        return parent::render($request, $exception);
     }
 
-}
 ```
+
+To handle all application requests and responses, you need to add to the file `app/Http/Kernel.php` this line. Recommended use its in block HTTP middlewares, but you can use it in any block.
+
+```php
+
+protected $middleware = [
+        // Other app middlewares...
+        
+        \kashirin\rabbit_mq\Middlewares\ResponseHandlerMiddleware::class,
+    ];
+
+```
+
+### Basic Usage
+
+In any place of application you can use Logger with type of methods from [PSR-3 standard](https://www.php-fig.org/psr/psr-3/)
+
+```php
+use Illuminate\Http\Request;
+use kashirin\rabbit_mq\Log;
+    
+        
+/**
+ * Class IndexController
+ * @package App\Http\Controllers
+ */
+class IndexController extends Controller
+{
+    /**
+     * @param Request $request
+     * @param Log $log
+     * @return array
+     * @throws \AMQPChannelException
+     * @throws \AMQPConnectionException
+     * @throws \AMQPExchangeException
+     */
+    public function index(Request $request, Log $log)
+    {
+        $response = [];
+        
+        //some logic
+        
+        $log->info('message to log');
+        
+        try {
+            //something
+        } catch 
+        
+        return $response;
+    }
+} 
+```
+
