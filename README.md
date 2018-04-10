@@ -39,7 +39,8 @@ You will also need to add credentials in your `config/services.php` configuratio
     'port' => 'your-rabbit-port',
     'user' => 'your-rabbit-user-name',
     'password' => 'your-rabbit-user-password',
-    'name' => 'your-rabbit-exchange'
+    'exchange' => 'your-rabbit-exchange'
+    'facility' => 'name of project'
 ],
 ```
 
