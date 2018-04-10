@@ -94,17 +94,27 @@ class IndexController extends Controller
      */
     public function index(Request $request, Log $log)
     {
-        $response = [];
+       $response = [];
+       
+       //some logic
         
-        //some logic
+       //simply message log
+       $log->info('message to log');
         
-        $log->info('message to log');
-        
-        try {
-            //something
-        } catch 
-        
-        return $response;
+       try {
+           $data = 'some logic';
+       } catch (Exception $exception) {
+           //log any Throwable error or exception
+           $log->error($exception);
+       }
+    
+       //this type of logs except to use Response and Request objects from Laravel. Used in middleware.
+       $log->log($response, $request);
+    
+       //log any JsonSerializable data
+       $log->debug($data);
+    
+       return $response;
     }
 } 
 ```
