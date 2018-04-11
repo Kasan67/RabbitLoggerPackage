@@ -81,6 +81,6 @@ class InRequestEntity implements BodyInterface
      */
     private function getDuration($time)
     {
-        return round((microtime(true) - $time), 3);
+        return round((microtime(true) -  number_format($time, 3, '.', '')), 3) * 1000 . ' ms';
     }
 }

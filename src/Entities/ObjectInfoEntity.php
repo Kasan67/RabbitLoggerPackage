@@ -26,7 +26,7 @@ class ObjectInfoEntity implements BodyInterface
     public $local_host;
 
     /**
-     * @var - - ip-адрес хоста, с которым проходит обмен данными
+     * @var - ip-адрес хоста, с которым проходит обмен данными
      */
     public $remote_host;
 
@@ -36,7 +36,7 @@ class ObjectInfoEntity implements BodyInterface
     public $obj_id;
 
     /**
-     * @var -  путь к приложению
+     * @var - путь к приложению
      */
     public $app_path;
 
@@ -46,9 +46,9 @@ class ObjectInfoEntity implements BodyInterface
      */
     public function __construct($facility)
     {
-        $dateObj = \DateTime::createFromFormat('U.u', $_SERVER['REQUEST_TIME_FLOAT']);
-
-        $this->dt = $dateObj->format('Y-m-d H:i:s:u');
+        $dateObj = \DateTime::createFromFormat('U.u', number_format($_SERVER['REQUEST_TIME_FLOAT'], 3, '.', ''));
+        $dateObj->setTimeZone(new \DateTimeZone('Europe/Kiev'));
+        $this->dt = trim($dateObj->format('Y-m-d H:i:s.u'), '0');
         $this->local_host = $_SERVER['HTTP_HOST'];
         $this->remote_host = $_SERVER['REMOTE_ADDR'];
         $this->obj_id = $facility;

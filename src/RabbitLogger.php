@@ -40,14 +40,13 @@ class RabbitLogger
             $config['host'],
             $config['port'],
             $config['user'],
-            $config['password'],
-            $config['exchange']
+            $config['password']
         );
 
         $this->channel = $connection->channel();
-        $this->channel->queue_declare($this->config['facility'], false, true, false, false, false);
+        $this->channel->queue_declare($this->config['queue'], false, true, false, false, false);
         $this->channel->exchange_declare($this->config['exchange'], 'direct', false, true, false);
-        $this->channel->queue_bind($this->config['facility'], $this->config['exchange']);
+        $this->channel->queue_bind($this->config['queue'], $this->config['exchange'], $this->config['key']);
 
     }
 
@@ -62,7 +61,7 @@ class RabbitLogger
         if ($this->channel instanceof \AMQPExchange) {
             $this->channel->publish(
                 $data,
-                '',
+                $this->config['key'],
                 0,
                 ['delivery_mode' => 2, 'content_type' => 'application/json']
             );
@@ -109,8 +108,11 @@ class RabbitLogger
         if (!isset($config['password']))
             throw new \Exception("Variable password doesn't exist");
 
-        if (!isset($config['facility']))
-            throw new \Exception("Variable facility doesn't exist");
+        if (!isset($config['queue']))
+            throw new \Exception("Variable queue doesn't exist");
+
+        if (!isset($config['key']))
+            $config['key'] = '';
 
         if (!isset($config['exchange']))
             $config['exchange'] = '';
