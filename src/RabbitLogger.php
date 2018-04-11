@@ -45,8 +45,8 @@ class RabbitLogger
 
         $this->channel = $connection->channel();
         $this->channel->queue_declare($this->config['queue'], false, true, false, false, false);
-        $this->channel->exchange_declare($this->config['exchange'], 'direct', false, true, false);
-        $this->channel->queue_bind($this->config['queue'], $this->config['exchange'], $this->config['key']);
+        //$this->channel->exchange_declare($this->config['exchange'], 'direct', false, true, false);
+        //$this->channel->queue_bind($this->config['queue'], $this->config['exchange'], $this->config['key']);
 
     }
 
@@ -67,8 +67,7 @@ class RabbitLogger
             );
         } else {
             $this->channel->basic_publish(
-                $this->createAmqpMessage($data),
-                $this->config['exchange']
+                $this->createAmqpMessage($data),'',$this->config['queue']
             );
         }
     }

@@ -29,14 +29,14 @@ You will also need to add credentials in your `config/services.php` configuratio
 
 ```php
 'rabbit_logger' => [
-    'host' => 'your-rabbit-host',
-    'port' => 'your-rabbit-port',
-    'user' => 'your-rabbit-user-name',
-    'password' => 'your-rabbit-user-password',
+    'host' => 'your-rabbit-host',  //required
+    'port' => 'your-rabbit-port', //required
+    'user' => 'your-rabbit-user-name', //required
+    'password' => 'your-rabbit-user-password',  //required
     'exchange' => 'your-rabbit-exchange',
-    'queue' => 'your-rabbit-queue',
+    'queue' => 'your-rabbit-queue', //required
     'key' => 'your-rabbit-key',
-    'facility' => 'project-path-from-github'
+    'facility' => 'project-path-from-github' //required
 ],
 ```
 
