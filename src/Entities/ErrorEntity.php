@@ -31,9 +31,9 @@ class ErrorEntity implements BodyInterface
 
     /**
      * ErrorEntity constructor.
-     * @param \ErrorException $exception
+     * @param \Throwable $exception
      */
-    public function __construct(\ErrorException $exception)
+    public function __construct(\Throwable $exception)
     {
         $this->err_text = $exception->getMessage();
         $this->err_code = $exception->getCode();

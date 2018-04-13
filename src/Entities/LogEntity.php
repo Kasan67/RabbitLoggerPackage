@@ -60,7 +60,6 @@ class LogEntity
         // информация о хостах
         $this->data_obj = $this->getLog(new ObjectInfoEntity($facility));
 
-        //TODO get SID from Chameleon
     }
 
     /**
