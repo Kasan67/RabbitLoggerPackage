@@ -46,12 +46,14 @@ class ObjectInfoEntity implements BodyInterface
      */
     public function __construct($facility)
     {
+
         $dateObj = \DateTime::createFromFormat('U.u', number_format($_SERVER['REQUEST_TIME_FLOAT'], 3, '.', ''));
         $dateObj->setTimeZone(new \DateTimeZone('Europe/Kiev'));
         $this->dt = trim($dateObj->format('Y-m-d H:i:s.u'), '0');
         $this->local_host = $_SERVER['HTTP_HOST'];
         $this->remote_host = $_SERVER['REMOTE_ADDR'];
-        $this->obj_id = $facility;
+        $facility = preg_replace('/[^\\w\/]+/', '', $facility);
+        $this->obj_id = strtolower(str_replace('/', '_', $facility));
         $this->app_path = $_SERVER['DOCUMENT_ROOT'];
     }
 
