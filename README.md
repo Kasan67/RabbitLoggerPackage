@@ -28,7 +28,7 @@ After installing the library, register the `kashirin\rabbit_mq\RabbitLoggerServi
 You will also need to add credentials in your `config/services.php` configuration file. For example:
 
 ```php
-'rabbit_logger' => [
+'rabbit_log' => [
     'host' => 'your-rabbit-host',  //required
     'port' => 'your-rabbit-port', //required
     'user' => 'your-rabbit-user-name', //required
