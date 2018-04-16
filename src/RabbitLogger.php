@@ -40,7 +40,8 @@ class RabbitLogger
             $config['host'],
             $config['port'],
             $config['user'],
-            $config['password']
+            $config['password'],
+            $config['vhost']
         );
 
         $this->channel = $connection->channel();
@@ -109,6 +110,9 @@ class RabbitLogger
 
         if (!isset($config['queue']))
             throw new \Exception("Variable queue doesn't exist");
+
+        if (!isset($config['vhost']))
+            $config['vhost'] = '/';
 
         if (!isset($config['key']))
             $config['key'] = '';
