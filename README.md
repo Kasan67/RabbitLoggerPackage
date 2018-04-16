@@ -36,7 +36,8 @@ You will also need to add credentials in your `config/services.php` configuratio
     'exchange' => 'your-rabbit-exchange',
     'queue' => 'your-rabbit-queue', //required
     'key' => 'your-rabbit-key',
-    'facility' => 'project-path-from-github' //required
+    'facility' => 'project-path-from-github' //required,
+    'vhost' => 'your-rabbit-vhost'
 ],
 ```
 
