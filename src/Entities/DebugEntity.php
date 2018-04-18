@@ -5,7 +5,7 @@
  * Time: 9:19 AM
  */
 
-namespace kashirin\rabbit_mq;
+namespace kashirin\rabbit_mq\Entities;
 
 
 /**

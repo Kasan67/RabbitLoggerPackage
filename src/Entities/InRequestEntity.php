@@ -5,7 +5,7 @@
  * Time: 4:41 PM
  */
 
-namespace kashirin\rabbit_mq;
+namespace kashirin\rabbit_mq\Entities;
 
 
 use Illuminate\Http\Request;

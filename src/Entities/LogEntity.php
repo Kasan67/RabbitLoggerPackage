@@ -5,7 +5,7 @@
  * Time: 4:57 PM
  */
 
-namespace kashirin\rabbit_mq;
+namespace kashirin\rabbit_mq\Entities;
 
 
 use Ramsey\Uuid\Uuid;
