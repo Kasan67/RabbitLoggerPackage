@@ -33,10 +33,12 @@ You will also need to add credentials in your `config/services.php` configuratio
     'port' => 'your-rabbit-port', //required
     'user' => 'your-rabbit-user-name', //required
     'password' => 'your-rabbit-user-password',  //required
-    'exchange' => 'your-rabbit-exchange',
+    'facility' => 'project-path-from-github', //required
     'queue' => 'your-rabbit-queue', //required
+    'second_queue' => 'your-rabbit-queue',
+    'exchange' => 'your-rabbit-exchange',
+    'exchange_type' => 'your-rabbit-exchange-type',
     'key' => 'your-rabbit-key',
-    'facility' => 'project-path-from-github' //required,
     'vhost' => 'your-rabbit-vhost'
 ],
 ```

@@ -25,11 +25,6 @@ class InfoEntity implements BodyInterface
     public $msg_code;
 
     /**
-     * @var - stacktrace возникновения ошибки.
-     */
-    public $stacktrace;
-
-    /**
      * InfoEntity constructor.
      * @param $data
      */

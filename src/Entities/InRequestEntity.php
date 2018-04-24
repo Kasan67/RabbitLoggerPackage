@@ -65,14 +65,21 @@ class InRequestEntity implements BodyInterface
      */
     public function __construct($request, $response)
     {
-        $this->duration = $this->getDuration($request->server->get('REQUEST_TIME_FLOAT'));
-        $this->request_uri = $request->fullUrl();
-        $this->request_headers = $request->headers->all();
-        $this->request_body = $request->all();
+        $isYii = get_class($request) == 'yii\web\Request';
+        $this->duration = $this->getDuration($_SERVER['REQUEST_TIME_FLOAT']);
+        $this->request_uri = ($isYii) ? $request->getAbsoluteUrl() : $request->fullUrl();
+        $this->request_headers = ($isYii) ? $request->headers->toArray() : $request->headers->all();
+
+        if ($isYii) {
+            $this->request_body = ($request->getRawBody()) ? $request->getRawBody() : $request->getQueryParams();
+        } else {
+            $this->request_body = $request->all();
+        }
+
         $this->request_type = $request->getMethod();
-        $this->response_code = $response->status();
-        $this->response_body = $response->getOriginalContent();
-        $this->response_headers = $response->headers->all();
+        $this->response_code = ($isYii) ? $response->getstatusCode() : $response->status();
+        $this->response_body = ($isYii) ? $response->data : $response->getOriginalContent();
+        $this->response_headers =  ($isYii) ? $response->headers->toArray() : $response->headers->all();
     }
 
     /**

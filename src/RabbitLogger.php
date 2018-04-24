@@ -46,8 +46,20 @@ class RabbitLogger
 
         $this->channel = $connection->channel();
         $this->channel->queue_declare($this->config['queue'], false, true, false, false, false);
-        //$this->channel->exchange_declare($this->config['exchange'], 'direct', false, true, false);
-        //$this->channel->queue_bind($this->config['queue'], $this->config['exchange'], $this->config['key']);
+
+        if (!empty($this->config['second_queue'])) {
+
+            $this->channel->queue_declare($this->config['second_queue'], false, false, false, ["x-message-ttl" => 60000]);
+
+            if (!empty($this->config['exchange'])) {
+                $this->channel->exchange_declare($this->config['exchange'], $this->config['exchange_type'], false, true, false);
+                $this->channel->queue_bind($this->config['queue'], $this->config['exchange'], $this->config['key']);
+                $this->channel->queue_bind($this->config['second_queue'], $this->config['exchange'], $this->config['key']);
+            }
+
+
+        }
+
 
     }
 
@@ -111,6 +123,9 @@ class RabbitLogger
         if (!isset($config['queue']))
             throw new \Exception("Variable queue doesn't exist");
 
+        if (!isset($config['second_queue']))
+            $config['second_queue'] = '';
+
         if (!isset($config['vhost']))
             $config['vhost'] = '/';
 
@@ -119,6 +134,9 @@ class RabbitLogger
 
         if (!isset($config['exchange']))
             $config['exchange'] = '';
+
+        if (!isset($config['exchange_type']))
+            $config['exchange_type'] ='direct';
 
         $this->config = $config;
     }
