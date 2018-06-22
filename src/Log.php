@@ -7,6 +7,7 @@
 
 namespace kashirin\rabbit_mq;
 
+use kashirin\rabbit_mq\Entities\LogEntity;
 
 use Psr\Log\LoggerInterface;
 
@@ -41,6 +42,7 @@ class Log implements LoggerInterface
     /**
      * Log constructor.
      * @param $config
+     * @throws \Exception
      */
     public function __construct($config)
     {

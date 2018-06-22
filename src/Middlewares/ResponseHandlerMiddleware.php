@@ -29,8 +29,8 @@ class ResponseHandlerMiddleware
     /**
      * Create a new middleware instance.
      *
-     * @param  \Illuminate\Foundation\Application  $app
-     * @return void
+     * @param  \Illuminate\Foundation\Application $app
+     * @throws \Exception
      */
     public function __construct(Application $app)
     {

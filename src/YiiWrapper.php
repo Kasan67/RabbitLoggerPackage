@@ -18,6 +18,7 @@ class YiiWrapper extends Log implements Configurable, BootstrapInterface
      * Construct
      *
      * @param array $config - Конфиги компонента
+     * @throws \Exception
      */
     public function __construct($config = [])
     {
